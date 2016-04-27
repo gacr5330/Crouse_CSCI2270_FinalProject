@@ -73,15 +73,11 @@ class Battle
 		}
 
 		// Decrease the damage by the damage blocked, then ensure that
-		// damage is always inflicted (we do not want battles to last
-		// forever, nor to we want attacks to heal the wounded!)
+		// damage is always inflicted 
 		damage -= defense;
 		if(damage < 1) damage = 1;
 
-		// Add the hit rate to the base hit rate and subract the target's
-		// dexterity from it. Instead of halving it to normalise it into
-		// a percentage, we just double the range of randomly generated
-		// values
+		// hit rate values
 		if(rand() % 201 <= 170 + hitRate - b->dex)
 		{
 			// The attack hit, so subtract the damage
@@ -131,9 +127,7 @@ class Battle
 		return;
 	}
 
-	// Return true if the creature is dead. Split into it's own function
-	// to allow easy addition of effects which simulate death, such as
-	// petrifaction or banishment
+	// Return true if the creature is dead. 
 	bool isdead(Monster* creature)
 	{
 		if(creature->health <= 0)
@@ -197,14 +191,12 @@ class Battle
 		// If the enemy is dead, then allocate experience to the player
 		if(isdead(creatures[1]))
 		{
-			// Give experience to the player equal to one eigth of the
+			// Give experience to the player equal to one eighth of the
 			// experience the enemy gained to reach it's next level
 			unsigned int expGain = creatures[1]->expToLevel(creatures[1]->level+1) / 8;
 			std::cout << "Gained " << expGain << " exp!\n";
 			creatures[0]->exp += expGain;
 
-			// Repeatedly level up the player until they are the highest
-			// level they can be for their experience
 			while(creatures[0]->levelUp());
 		}
 
