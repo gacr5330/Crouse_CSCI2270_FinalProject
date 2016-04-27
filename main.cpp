@@ -20,15 +20,15 @@ using namespace std;
 // menu
 Monster dialogue_newchar();
 
-void dialogue_menu(Monster& player);
+Monster dialogue_menu(Monster& player);
 
 int main(void)
 {
-	std::vector<Monster> creatureAtlas;
-	std::vector<Items> itemAtlas;
-	std::vector<Weapons> weaponAtlas;
-	std::vector<Armour> armourAtlas;
-	std::vector<Area> areaAtlas;
+	vector<Monster> creatureAtlas;
+	vector<Items> itemAtlas;
+	vector<Weapons> weaponAtlas;
+	vector<Armour> armourAtlas;
+	vector<Area> areaAtlas;
 
 	Monster player;
 
@@ -43,12 +43,12 @@ int main(void)
 
 	// Main game menu dialogue
 	int result = Conversations(
-		"Welcome!",
+		"Welcome Adventurer!",
 		{"Start a New Game"}).startConversation();
 
 	switch(result)
 	{
-		case 1: player = dialogue_newchar(); break;
+		case 1: player = dialogue_newchar();break;
 		default: return 0; break;
 	}
 
@@ -57,48 +57,37 @@ int main(void)
 	// Play the game until a function breaks the loop and closes it
 	while(1)
 	{
-		// If the player has died then inform them as such and close program
+		// If the player has died
 		if(player.health <= 0)
 		{
-			std::cout << "\t----YOU DIED----\n    Game Over\n";
+			cout << "\t----YOU DIED----\n    Game Over\n";
 			return 0;
 		}
 
-		// If the area the player is in has any creatures inside it,
-		// then begin a battle with the first creature in the list
-		if(currentArea->creatures.size() > 0)
+		// If the area the player is in has any creatures inside it, Battle!
+				if(currentArea->creatures.size() > 0)
 		{
 			Battle(&player, currentArea->creatures[0]).run();
-			// Remove the creature from the area. This is fine to do
-			// because if the player wins the creature will not respawn,
-			// and if the creature wins the player isn't around to see it
-			// (This does break the 'non-mutable' feature of the atlases,
-			// but doing so saves a lot of memory, as we don't need to keep
 			// two versions of each area)
 			currentArea->creatures.pop_back();
 		}
 
-		// Activate the current area's dialogue
+		// Activate current area's conversation
 		result = currentArea->dialogue.startConversation();
 
-		// These could be moved inside of the area code using an event
-		// style system, but that allows for much less flexibility with
-		// what happens in each area. Since we're defining the areas in
-		// code anyway, sticking with this isn't too much of a problem,
-		// and it keeps things easy to understand
 		if(currentArea == &(areaAtlas[0]))
 		{
 			switch(result)
 			{
 				// Open the menu
-				case 0:
+				case 1:
 					dialogue_menu(player);
 					break;
-				case 1:
+				case 2:
 				// Move to area 1
 					currentArea = &(areaAtlas[1]);
 					break;
-				case 2:
+				case 3:
 				// Search the area
 					currentArea->search(player);
 					break;
@@ -134,13 +123,9 @@ int main(void)
 // Create a new character
 Monster dialogue_newchar()
 {
-	// Ask for a name and class
-	// Name does not use a dialogue since dialogues only request options,
-	// not string input. Could be generalised into its own TextInput
-	// class, but not really necessary
-	std::cout << "Choose your name" << std::endl;
-	std::string name;
-	std::cin >> name;
+	cout << "Choose your name" << std::endl;
+	string name;
+	cin >> name;
 
 	int result = Conversations(
 		"Choose your class",
@@ -165,7 +150,7 @@ Monster dialogue_newchar()
 	}
 }
 
-void dialogue_menu(Monster& player)
+Monster dialogue_menu(Monster& player)
 {
 	// Output the menu
 	int result = Conversations(
@@ -176,32 +161,30 @@ void dialogue_menu(Monster& player)
 	{
 		// Print the items that the player owns
 		case 1:
-			std::cout << "Items\n=====\n";
+			cout << "Items\n=====\n";
 			player.inventory.print();
-			std::cout << "----------------\n";
+			cout << "----------------\n";
 			break;
-		// Print the equipment that the player is wearing (if they are
-		// wearing anything) and then ask if they want to equip a weapon
-		// or some armour
+		// Print the equipment that the player is wearing and ask to equip anything from inventory
 		case 2:
 		{
-			std::cout << "Equipment\n=========\n";
-			std::cout << "Head: "
+			cout << "Equipment\n=========\n";
+			cout << "Head: "
 				<< (player.equippedArmour[Armour::ArmourSlot::HEAD] != nullptr ?
 					player.equippedArmour[Armour::ArmourSlot::HEAD]->itemName: "Nothing")
-				<< std::endl;
-			std::cout << "Torso: "
+				<< endl;
+			cout << "Torso: "
 				<< (player.equippedArmour[Armour::ArmourSlot::TORSO] != nullptr ?
 					player.equippedArmour[Armour::ArmourSlot::TORSO]->itemName : "Nothing")
-				<< std::endl;
-			std::cout << "Legs: "
+				<< endl;
+			cout << "Legs: "
 				<< (player.equippedArmour[Armour::ArmourSlot::LEGS] != nullptr ?
 					player.equippedArmour[Armour::ArmourSlot::LEGS]->itemName : "Nothing")
-				<< std::endl;
-			std::cout << "Weapon: "
+				<< endl;
+			cout << "Weapon: "
 				<< (player.equippedWeapon != nullptr ?
 					player.equippedWeapon->itemName : "Nothing")
-				<< std::endl;
+				<< endl;
 
 			int result2 = Conversations(
 				"",
@@ -212,16 +195,15 @@ void dialogue_menu(Monster& player)
 				int userInput = 0;
 
 				// Cannot equip armour if they do not have any
-				// Print a list of the armour and retrieve the amount
-				// of armour in one go
+
 				int numItems = player.inventory.print_armour(true);
 				if(numItems == 0) break;
 
 				while(!userInput)
 				{
 					// Choose a piece of armour to equip
-					std::cout << "Equip which item?" << std::endl;
-					std::cin >> userInput;
+					cout << "Equip which item?" << endl;
+					cin >> userInput;
 					// Equipment is numbered but is stored in a list,
 					// so the number must be converted into a list element
 					if(userInput >= 1 && userInput <= numItems)
@@ -250,8 +232,8 @@ void dialogue_menu(Monster& player)
 
 				while(!userInput)
 				{
-					std::cout << "Equip which item?" << std::endl;
-					std::cin >> userInput;
+					cout << "Equip which item?" << endl;
+					cin >> userInput;
 					if(userInput >= 1 && userInput <= numItems)
 					{
 						int i = 1;
@@ -267,28 +249,28 @@ void dialogue_menu(Monster& player)
 					}
 				}
 			}
-			std::cout << "----------------\n";
+			cout << "----------------\n";
 			break;
 		}
 		// Output the character information, including name, class (if
 		// they have one), stats, level, and experience
 		case 3:
-			std::cout << "Character\n=========\n";
-			std::cout << player.characterName;
-			if(player.className != "") std::cout << " the " << player.className;
-			std::cout << std::endl;
+			cout << "Character\n=========\n";
+			cout << player.characterName;
+			if(player.className != "") cout << " the " << player.className;
+			cout << endl;
 
-			std::cout << "HP: " << player.health << " / " << player.maxHealth << std::endl;
-			std::cout << "Str: " << player.str << std::endl;
-			std::cout << "End: " << player.end << std::endl;
-			std::cout << "Dex: " << player.dex << std::endl;
-			std::cout << "Lvl: " << player.level << " (" << player.exp;
-			std::cout <<  " / " << player.expToLevel(player.level+1) << ")" << std::endl;
-			std::cout << "----------------\n";
+			cout << "HP: " << player.health << " / " << player.maxHealth << endl;
+			cout << "Str: " << player.str << endl;
+			cout << "End: " << player.end << endl;
+			cout << "Dex: " << player.dex << endl;
+			cout << "Lvl: " << player.level << " (" << player.exp;
+			cout <<  " / " << player.expToLevel(player.level+1) << ")" << endl;
+			cout << "----------------\n";
 			break;
 		default:
 			break;
 	}
 
-	return;
+	return player;
 }
