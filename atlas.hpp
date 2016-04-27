@@ -58,8 +58,8 @@ void buildatlas_area(std::vector<Area>& atlas,
 {
 	// Area definitions are somewhat more complicated:
 	atlas.push_back(Area(Conversations(			// Standard dialogue definiton
-		"You are in room 1",				// Description
-		{"Go to room 2", "Search"}),		// Choices
+		"You are at the Guild Hall!",				// Description
+		{"Character Menu","Go to the Dungeon", "Search Area"}),		// Choices
 		Inventory(							// Area inventory
 		{
 			std::make_pair(&items[0], 5)	// Pair of item and quantity
@@ -75,8 +75,8 @@ void buildatlas_area(std::vector<Area>& atlas,
 		}));
 
 	atlas.push_back(Area(Conversations(
-		"You are in room 2",
-		{"Go to room 1", "Search"}),
+		"You are in the Dungeon!",
+		{"Character Menu","Go to room 1", "Search"}),
 		Inventory(
 		{
 			std::make_pair(&items[0], 10),
