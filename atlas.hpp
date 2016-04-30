@@ -76,7 +76,7 @@ void buildatlas_area(std::vector<Area>& atlas,
 
 	atlas.push_back(Area(Conversations(
 		"You are in the Dungeon!",
-		{"Character Menu","Go to room 1", "Search"}),
+		{"Go to Guild Hall", "Search"}),
 		Inventory(
 		{
 			std::make_pair(&items[0], 10),
