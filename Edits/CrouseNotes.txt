@@ -1,0 +1,5 @@
+-Neat Project, I added a Mage class to the game
+as well as a defend perk for battle. Sorry if
+it messes with your code, I'm putting the edited
+files in a folder just in case you don't want the
+changes.
